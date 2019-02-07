@@ -36,15 +36,20 @@ def dataset_preparation(data):
 			for i in range(1, len(token_list)):
 				n_gram_sequence = token_list[:i+1]   # n+1 gram????
 				input_sequences.append(n_gram_sequence)
-				# make equal sequences important
-				max_sequence_len = max([len(x) for x in input_sequences])
-				input_sequences = np.array(pad_sequences(input_sequences, maxlen=max_sequence_len, padding='pre'))
-				# pad_sequences is adding padding to make it into the same length
-# Input: 
+		# make equal sequences important
+		max_sequence_len = max([len(x) for x in input_sequences])
+		input_sequences = np.array(pad_sequences(input_sequences, maxlen=max_sequence_len, padding='pre'))
+		print(input_sequences)
+		# pad_sequences is adding padding to make it into the same length
+		predictors, label = input_sequences[:,:-1],input_sequences[:,-1]
+		label = ku.to_categorical(label, num_classes=total_words)     # ku.to_categorical is converting a class vector (integers) to binary class matrix.
+	return predictors, label, total_words, max_sequence_len
+
+# Input: predictors, label, max_sequence_len, total_words
 # Output:
 
-def create_model():
-    pass
+def create_model(predictors, label, max_sequence_len, total_words):
+	pass
 
 # Input:
 # Output:
