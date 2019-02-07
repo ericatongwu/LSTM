@@ -1,3 +1,7 @@
+"""
+LSTM Prediction Model for debate statement 
+We will create N-grams sequence as predictors and the next word of the N-gram as label.
+"""
 from keras.preprocessing.sequence import pad_sequences
 from keras.layers import Embedding, LSTM, Dense
 from keras.preprocessing.text import Tokenizer
