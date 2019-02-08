@@ -45,9 +45,10 @@ def dataset_preparation(data):
 		predictors, label = input_sequences[:,:-1],input_sequences[:,-1]
 		
 		label = ku.to_categorical(label, num_classes=total_words)     # ku.to_categorical is converting a class vector (integers) to binary class matrix.
-		X_train, X_test, y_train, y_test = train_test_split(predictors, label, test_size=0.33, random_state=42) # split traing and testing data
-	#return predictors, label, total_words, max_sequence_len
-	return X_train, X_test, y_train, y_test, total_words, max_sequence_len
+		# X_train, X_test, y_train, y_test = train_test_split(predictors, label, test_size=0.33, random_state=42) # split traing and testing data
+
+	return predictors, label, total_words, max_sequence_len
+	#return X_train, X_test, y_train, y_test, total_words, max_sequence_len
 
 """
 
@@ -59,8 +60,9 @@ def dataset_preparation(data):
 """
 # Input: predictors, label, max_sequence_len, total_words
 # Output: model
+def create_model(predictors, label, total_words, max_sequence_len):
 
-def create_model(X_train, X_test, y_train, y_test, max_sequence_len, total_words):
+# def create_model(X_train, X_test, y_train, y_test, max_sequence_len, total_words):
 	input_len = max_sequence_len - 1
 
 	model = Sequential()
@@ -69,14 +71,15 @@ def create_model(X_train, X_test, y_train, y_test, max_sequence_len, total_words
 	# The largest integer (i.e. word index) in the input should be no larger than total_words (vocabulary size).
 	# Now model.output_shape == (None, 10, 64), where None is the batch
 	model.add(LSTM(150))
-	model.add(Dropout(0.1))
+	#model.add(Dropout(0.1))
 	model.add(Dense(total_words, activation='softmax'))
 
 	model.compile(loss='categorical_crossentropy', optimizer='adam')
-	model.fit(X_train, y_train, epochs=100, verbose=1)
+	model.fit(predictors, label, epochs=100, verbose=1)  # X_train, y_train,
     # To modify, we could change epoches, loss fuction
-	score = model.evaluate(X_test, y_test)
-	print(score)
+	# score = model.evaluate(predictors, y_test)
+	# print(score)
+
 	return model
 
 # Input: Input txt, wo
@@ -97,9 +100,17 @@ def generate_text(seed_text, next_words, max_sequence_len, model):    # seed_tex
 
 	return seed_text
 
-X, Y, max_len, total_words = dataset_preparation(read_file('final.json'))
-model = create_model(X, Y, max_len, total_words)
-test1 = "I want thank you all for coming out. This is a very important question at this very difficult time in our nation's"
-text = generate_text(test1, 3, msl, model)
+# X, Y, max_len, total_words = dataset_preparation(read_file('final.json'))
+# model = create_model(X, Y, max_len, total_words)
+if __name__ == "__main__":
+	file_name = 'final.json'
+	data = read_file(file_name)
+	predictors, label, max_sequence_len, total_words = dataset_preparation(data)
+	model = create_model(predictors, label, max_sequence_len, total_words)
+	seed_text = "I want thank you all for coming out. This is a very important question at this very difficult time in our nation's"
+	predict = generate_text(seed_text, 3,max_sequence_len, model)
+	print(predict)
+# test1 = "I want thank you all for coming out. This is a very important question at this very difficult time in our nation's"
+# text = generate_text(test1, 3, msl, model)
 
-print(text)
+# print(text)
